@@ -14,12 +14,14 @@ define(function(require) {
     initialize: function(options) {
       options = options || {};
       if (!options.palette) throw "ArgumentError: Must supply a Prefab Palette";
+      if (!options.layers) throw "ArgumentError: Must supply a layers view";
 
       var canvas = this.$('canvas')[0];
 
       this.width   = canvas.width;
       this.height  = canvas.height;
       this.palette = options.palette;
+      this.layers  = options.layers;
       this.size    = options.size || { x: 40, y: 10 };
       this.drawing = false;
       this.ctx     = canvas.getContext('2d');
@@ -29,6 +31,7 @@ define(function(require) {
       };
 
       this.collection.on('all', this.render, this);
+      this.layers.on('change:layer', this.render, this);
     },
 
     startDrawing: function(event) {
@@ -45,17 +48,19 @@ define(function(require) {
 
       if (!this.drawing) return;
       if (!this.palette.selection) return;
+      if (typeof this.layers.selection == 'undefined') return;
 
-      var prefab = this.palette.prefab;
       var cell = this.cellAtPosition({
         x: event.offsetX,
         y: event.offsetY
       });
       if (!cell) return;
 
-      var preexisting = this.collection.detect(function(element) {
-        return element.get('x') == cell.x && element.get('z') == cell.y;
-      });
+      var preexisting = this.collection.detect(_.bind(function(block) {
+        return block.get('x') == cell.x &&
+          block.get('y') == this.layers.selection &&
+          block.get('z') == cell.y;
+      }, this));
 
       if (preexisting) {
         if (this.palette.selection == 'Erase') {
@@ -63,7 +68,7 @@ define(function(require) {
         } else {
           preexisting.set({
             type: this.palette.selection,
-            y: prefab.get('layer')
+            y: this.layers.selection
           });
         }
       } else {
@@ -71,7 +76,7 @@ define(function(require) {
         this.collection.add({
           type: this.palette.selection,
           x: cell.x,
-          y: prefab.get('layer'),
+          y: this.layers.selection,
           z: cell.y
         });
       }
@@ -94,7 +99,10 @@ define(function(require) {
     },
 
     drawElements: function() {
-      this.collection.each(_.bind(function(element) {
+      var inView = this.collection.filter(_.bind(function(block) {
+        return block.get('y') == this.layers.selection;
+      }, this));
+      _.each(inView, _.bind(function(element) {
         var prefab = element.prefab();
         var color = new THREE.Color(prefab.get('color')).getContextStyle();
 

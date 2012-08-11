@@ -18,23 +18,27 @@ define(function(require) {
       this.prefabs = options.prefabs;
       if (!this.prefabs) throw "ArgumentError: Must supply list of prefabs";
 
-      this.selection = null;
-      this.prefab = null;
+      this.prefab = this.prefabs.at(0);
+      this.selection = this.prefab.get('id');
+
+      this.on('change:prefab', this.render, this);
     },
 
     render: function() {
       var types = this.prefabs.pluck('id');
-      this.$el.html(this.template({ blocks: types }));
+      this.$el.html(this.template({
+        selection: this.selection,
+        blocks: types
+      }));
     },
 
     choosePrefab: function(event) {
       var target = $(event.currentTarget);
 
-      target.siblings().removeClass('active');
-      target.addClass('active');
-
-      this.selection = target.text();
+      this.selection = $.trim(target.text());
       this.prefab = this.prefabs.get(this.selection);
+
+      this.trigger('change:prefab');
     }
   });
   return Palette;

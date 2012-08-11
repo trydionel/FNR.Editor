@@ -2,6 +2,8 @@ define(function(require) {
 
   var Prefabs = require('collections/prefabs');
   var Blocks  = require('collections/blocks');
+
+  var Layers  = require('views/layers');
   var Palette = require('views/palette');
   var Editor  = require('views/editor');
   var Preview = require('views/preview');
@@ -14,13 +16,15 @@ define(function(require) {
     // This is clunky
     this.blocks.model.prefabs = this.prefabs;
 
+    this.layers  = new Layers;
     this.palette = new Palette({ prefabs: this.prefabs });
-    this.editor  = new Editor({ palette: this.palette, collection: this.blocks });
+    this.editor  = new Editor({ palette: this.palette, layers: this.layers, collection: this.blocks });
     this.preview = new Preview({ collection: this.blocks, editor: this.editor });
     this.toolbar = new Toolbar({ collection: this.blocks });
   };
 
   Application.prototype.run = function() {
+    this.layers.render();
     this.palette.render();
     this.editor.render();
     this.preview.render();
