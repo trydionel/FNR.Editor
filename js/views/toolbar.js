@@ -8,12 +8,19 @@ define(function(require) {
     el: '.toolbar',
 
     events: {
+      "click .new"  : "new",
       "click .save" : "save",
       "click .load" : "load"
     },
 
     initialize: function() {
       this.collection.on('add remove change', this.cleanup, this);
+    },
+
+    new: function() {
+      if (confirm("Existing changes will be lost.")) {
+        this.collection.reset();
+      }
     },
 
     save: function() {
