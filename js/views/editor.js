@@ -22,13 +22,16 @@ define(function(require) {
       this.height  = canvas.height;
       this.palette = options.palette;
       this.layers  = options.layers;
-      this.size    = options.size || { x: 40, y: 10 };
+      this.size    = options.size || { x: 80, y: 80 };
       this.drawing = false;
       this.ctx     = canvas.getContext('2d');
       this.cell    = {
         width: (this.width - 1) / this.size.x,
         height: (this.height - 1) / this.size.y
       };
+
+      this.$el.scrollLeft(canvas.width / 4);
+      this.$el.scrollTop(canvas.height / 4);
 
       this.collection.on('all', this.render, this);
       this.layers.on('change:layer', this.render, this);
