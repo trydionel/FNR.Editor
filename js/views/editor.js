@@ -97,28 +97,41 @@ define(function(require) {
 
     render: function() {
       this.ctx.clearRect(0, 0, this.width, this.height);
-      this.drawElements();
-      this.drawGrid();
+      this.renderElements();
+      this.renderGrid();
     },
 
-    drawElements: function() {
-      var inView = this.collection.filter(_.bind(function(block) {
-        return block.get('y') == this.layers.selection;
-      }, this));
-      _.each(inView, _.bind(function(element) {
-        var prefab = element.prefab();
-        var color = new THREE.Color(prefab.get('color')).getContextStyle();
+    renderElements: function() {
+      var layers = this.collection.groupBy(function(block) {
+        return block.get('y');
+      });
 
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(
-          element.get('x') * this.cell.width,
-          element.get('z') * this.cell.height,
-          this.cell.width,
-          this.cell.height);
+      var render = _.bind(function(blocks) {
+        _.each(blocks, _.bind(function(element) {
+          var prefab = element.prefab();
+          var color = new THREE.Color(prefab.get('color')).getContextStyle();
+
+          this.ctx.fillStyle = color;
+          this.ctx.fillRect(
+            element.get('x') * this.cell.width,
+            element.get('z') * this.cell.height,
+            this.cell.width,
+            this.cell.height);
+        }, this));
+      }, this);
+
+      _.each(this.layers.all, _.bind(function(layer) {
+        var blocks = layers[layer];
+        this.ctx.save();
+        if (layer != this.layers.selection) {
+          this.ctx.globalAlpha = 0.25;
+        }
+        render(blocks);
+        this.ctx.restore();
       }, this));
     },
 
-    drawGrid: function() {
+    renderGrid: function() {
       this.ctx.fillStyle = this.gridColor;
 
       for (var x = 0; x <= this.size.x; x++)

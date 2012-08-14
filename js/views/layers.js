@@ -20,7 +20,7 @@ define(function(require) {
     render: function() {
       this.$el.html(this.template({
         selection: this.selection,
-        layers: _.range(-2, 3)
+        layers: this.all
       }));
     },
 
@@ -28,7 +28,9 @@ define(function(require) {
       var target = $(event.currentTarget);
       this.selection = parseInt(target.text(), 10);
       this.trigger('change:layer');
-    }
+    },
+
+    all: _.range(-2, 3)
 
   });
 });
