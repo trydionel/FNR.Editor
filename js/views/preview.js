@@ -30,9 +30,23 @@ define(function(require) {
       this.renderer = new THREE.WebGLRenderer({ canvas: canvas });
 
       this.collection.on('all', _.throttle(this.draw, 100), this);
+      this.resize();
       this.draw();
 
-      _.bindAll(this, 'render', 'draw');
+      _.bindAll(this, 'render', 'draw', 'resize');
+
+      $(window).resize(this.resize);
+    },
+
+    resize: function() {
+      this.width = this.$el.innerWidth() -
+        parseInt(this.$el.css('paddingLeft'), 10) -
+        parseInt(this.$el.css('paddingRight'), 10);
+
+      this.camera.aspect = this.width / this.height;
+      this.camera.updateProjectionMatrix();
+
+      this.renderer.setSize(this.width, this.height);
     },
 
     render: function(time) {
