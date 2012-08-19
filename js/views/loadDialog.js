@@ -11,7 +11,9 @@ define(function(require) {
     },
 
     render: function() {
-      this.$el.html(this.template()).modal();
+      this.setElement(this.template());
+      this.$el.modal();
+      return this;
     },
 
     load: function() {

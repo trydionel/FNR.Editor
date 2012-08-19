@@ -26,8 +26,9 @@ define(function(require) {
     },
 
     render: function() {
-      this.$el.html(this.template()).modal();
-      this.$('.download').attr('href', this.blobURL);
+      this.setElement(this.template({ href: this.blobURL }));
+      this.$el.modal();
+      return this;
     },
 
     rename: function() {
