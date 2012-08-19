@@ -29,6 +29,10 @@ define(function(require) {
         width: (this.width - 1) / this.size.x,
         height: (this.height - 1) / this.size.y
       };
+      this.center  = {
+        x: Math.floor(0.5 * this.size.x),
+        y: Math.floor(0.5 * this.size.y)
+      };
 
       this.$el.scrollLeft(canvas.width / 4);
       this.$el.scrollTop(canvas.height / 4);
@@ -59,29 +63,20 @@ define(function(require) {
       });
       if (!cell) return;
 
-      var preexisting = this.collection.detect(_.bind(function(block) {
-        return block.get('x') == cell.x &&
-          block.get('y') == this.layers.selection &&
-          block.get('z') == cell.y;
-      }, this));
+      var attributes = { x: cell.x, y: this.layers.selection, z: cell.y };
+      var preexisting = this.collection.where(attributes)[0];
+      attributes.type = this.palette.selection;
 
+      // FIXME: This should delegate to a Tool
       if (preexisting) {
         if (this.palette.selection == 'Erase') {
           this.collection.remove(preexisting);
         } else {
-          preexisting.set({
-            type: this.palette.selection,
-            y: this.layers.selection
-          });
+          preexisting.set(attributes);
         }
       } else {
         if (this.palette.selection == 'Erase') return;
-        this.collection.add({
-          type: this.palette.selection,
-          x: cell.x,
-          y: this.layers.selection,
-          z: cell.y
-        });
+        this.collection.add(attributes);
       }
     },
 
@@ -89,8 +84,8 @@ define(function(require) {
       if (position.x < 0 || position.y < 0) return;
       if (position.x >= this.width || position.y >= this.height) return;
 
-      var x = Math.floor(position.x / this.cell.width);
-      var y = Math.floor(position.y / this.cell.height);
+      var x = Math.floor(position.x / this.cell.width) - this.center.x;
+      var y = Math.floor(position.y / this.cell.height) - this.center.y;
 
       return { x: x, y: y };
     },
@@ -113,8 +108,8 @@ define(function(require) {
 
           this.ctx.fillStyle = color;
           this.ctx.fillRect(
-            element.get('x') * this.cell.width,
-            element.get('z') * this.cell.height,
+            (element.get('x') + this.center.x) * this.cell.width,
+            (element.get('z') + this.center.y) * this.cell.height,
             this.cell.width,
             this.cell.height);
         }, this));
@@ -134,10 +129,14 @@ define(function(require) {
     renderGrid: function() {
       this.ctx.fillStyle = this.gridColor;
 
-      for (var x = 0; x <= this.size.x; x++)
+      for (var x = 0; x <= this.size.x; x++) {
+        this.ctx.fillStyle = (this.center.x == x) ? 'red' : this.gridColor;
         this.ctx.fillRect(x * this.cell.width, 0, 1, this.height);
-      for (var y = 0; y <= this.size.y; y++)
+      }
+      for (var y = 0; y <= this.size.y; y++) {
+        this.ctx.fillStyle = (this.center.y == y) ? 'red' : this.gridColor;
         this.ctx.fillRect(0, y * this.cell.height, this.width, 1);
+      }
     }
   });
 });
