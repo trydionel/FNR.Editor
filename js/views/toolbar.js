@@ -2,6 +2,7 @@ define(function(require) {
 
   var SaveDialog = require('views/saveDialog');
   var LoadDialog = require('views/loadDialog');
+  var GenerateDialog = require('views/generateDialog');
 
   return Backbone.View.extend({
 
@@ -10,7 +11,8 @@ define(function(require) {
     events: {
       "click .new"  : "new",
       "click .save" : "save",
-      "click .load" : "load"
+      "click .load" : "load",
+      "click .generate" : "generate"
     },
 
     initialize: function() {
@@ -30,6 +32,11 @@ define(function(require) {
 
     load: function() {
       var dialog = new LoadDialog({ collection: this.collection });
+      dialog.render();
+    },
+
+    generate: function() {
+      var dialog = new GenerateDialog({ collection: this.collection });
       dialog.render();
     }
 

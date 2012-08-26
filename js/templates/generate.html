@@ -1,0 +1,31 @@
+<div class="modal fade" id="generator">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">x</button>
+    <h3>Generate Maze</h3>
+  </div>
+  <div class="modal-body clearfix">
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="width">Width</label>
+        <div class="controls">
+          <input type="text" name="width" class="width input-min" value="10">
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="width">Height</label>
+        <div class="controls">
+          <input type="text" name="height" class="height input-min" value="10">
+        </div>
+      </div>
+    </form>
+    <canvas width="200" height="200" style="display: block; margin: 0 auto;"></canvas>
+  </div>
+  <div class="modal-footer">
+    <div class="progress progress-striped active" style="float: left; margin: 4px 0; width: 50%;">
+      <div class="bar" style="width: 0%;"></div>
+    </div>
+    <a href="#" class="btn" data-dismiss="modal">Close</a>
+    <a href="#" class="btn btn-warning generate">Generate</a>
+    <a href="#" class="btn btn-primary select">Select</a>
+  </div>
+</div>
