@@ -1,10 +1,12 @@
 <ul class="nav nav-list">
-  <li class="nav-header">Available Blocks</li>
-  <% _.each(blocks, function(block) { %>
-    <li <%= (selection === block) ? 'class="active"' : '' %>>
-      <a href="#"><%= block %></a>
-    </li>
+  <% _.each(categories, function(blocks, category) { %>
+    <li class="nav-header"><%= category %> Blocks</li>
+    <% _.each(blocks, function(block) { %>
+      <li <%= (selection === block.get('id')) ? 'class="active"' : '' %>>
+        <a href="#"><%= block.get('id') %></a>
+      </li>
+    <% }) %>
   <% }) %>
   <li class="nav-header">Tools</li>
-  <li><a href="#">Erase</a></li>
+  <li <%= (selection === 'Erase') ? 'class="active"': '' %>><a href="#">Erase</a></li>
 </ul>

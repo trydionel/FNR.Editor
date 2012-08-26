@@ -4,11 +4,7 @@ define(function(require) {
     constructor: Block,
 
     initialize: function() {
-      var prefab = this.prefab();
-      var mesh = new THREE.Mesh(prefab.get('geometry'), prefab.get('material'));
-
-      this.set('mesh', mesh, { silent: true });
-
+      this.setType(this.get('type'));
       this.on('change:type', this.setType, this);
     },
 
@@ -18,12 +14,16 @@ define(function(require) {
 
     setType: function(type) {
       var prefab = this.prefab();
-      this.set('prefab', prefab, { silent: true });
-      this.get('mesh').material = prefab.get('material');
+      var mesh = new THREE.Mesh(prefab.get('geometry'), prefab.get('material'));
+
+      this.set({
+        prefab: prefab,
+        category: prefab.get('category'),
+        mesh: mesh }, { silent: true });
     },
 
     toJSON: function() {
-      return _.pick(this.attributes, 'type', 'x', 'y', 'z');
+      return _.pick(this.attributes, 'type', 'category', 'x', 'y', 'z');
     }
   }, {
     prefabs: _([])

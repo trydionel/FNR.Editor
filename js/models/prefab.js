@@ -5,22 +5,22 @@ define(function(require) {
 
     defaults: {
       size: 100,
-      layer: 0,
-      wireframe: false
+      wireframe: false,
+      category: 'Tile'
     },
 
     initialize: function() {
-      var size = this.get('size'),
-        color = this.get('color'),
-        wireframe = this.get('wireframe');
+      var color     = this.get('color'),
+          wireframe = this.get('wireframe'),
+          factory   = this.get('factory') || function(model) {
+            var size = model.get('size');
+            return new THREE.CubeGeometry(size, size, size);
+          };
 
-      var geometry = new THREE.CubeGeometry(size, size, size);
+      var geometry = factory(this);
       var material = new THREE.MeshBasicMaterial({ color: color, wireframe: wireframe });
 
-      this.set({
-        geometry: geometry,
-        material: material
-      }, { silent: true });
+      this.set({ geometry: geometry, material: material }, { silent: true });
     }
   });
 });

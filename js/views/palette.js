@@ -25,10 +25,11 @@ define(function(require) {
     },
 
     render: function() {
-      var types = this.prefabs.pluck('id');
+      var categories = this.prefabs.groupBy(function(model) { return model.get('category') });
+
       this.$el.html(this.template({
         selection: this.selection,
-        blocks: types
+        categories: categories
       }));
     },
 
