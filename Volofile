@@ -1,0 +1,31 @@
+module.exports = {
+  clean: {
+    run: 'v.rm www-build'
+  },
+  prepare: {
+    run: 'v.mkdir www-build www-build/js www-build/css www-build/img'
+  },
+  compile: {
+    run: 'compass compile --sass-dir=app/css --css-dir=www-build/css'
+  },
+  optimize: {
+    run: 'r.js -o build.js'
+  },
+  copy: {
+    run: 'v.copyDir app www-build "" false collections|models|views|shaders|templates'
+  },
+  uglify: {
+    run: 'find www-build/js/lib -name *.js -exec uglifyjs --overwrite {} \;'
+  },
+  build: {
+    depends: ['clean', 'prepare', 'optimize', 'copy', 'uglify'],
+    run: 'echo' // no-op
+  },
+  deploy: {
+    depends: ['build'],
+    run: [
+      'rsync -avz -e ssh --delete www-build deploy@trydionel.com:~',
+      'ssh deploy@trydionel.com "rm -rf trydionel.com/fnr && mv -v www-build trydionel.com/fnr"'
+    ]
+  }
+}
